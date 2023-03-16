@@ -5,7 +5,7 @@ kubectl apply -f https://raw.githubusercontent.com/vfarcic/devops-toolkit-crossp
 ```  
 Now you can simply apply the files in this folder:
 ```bash
-
+kubectl apply -f ./
 ```
 And now you can create a claim for example:
 ```bash
