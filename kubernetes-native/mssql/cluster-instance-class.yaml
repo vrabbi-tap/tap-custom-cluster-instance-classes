@@ -1,0 +1,16 @@
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ClusterInstanceClass
+metadata:
+  name: sqlserver-unmanaged
+spec:
+  description:
+    short: SQL Server by TeraSky
+  provisioner:
+    crossplane:
+      compositeResourceDefinition: xsqlserverinstances.tap.terasky.com
+      compositionSelector:
+        matchLabels:
+          provider: terasky
+          type: sqlserver
+      compositionUpdatePolicy: Manual
