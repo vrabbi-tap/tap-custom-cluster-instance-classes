@@ -1,0 +1,16 @@
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ClusterInstanceClass
+metadata:
+  name: mongodb-unmanaged
+spec:
+  description:
+    short: MongoDB by Bitnami
+  provisioner:
+    crossplane:
+      compositeResourceDefinition: xmongodbinstances.tap.terasky.com
+      compositionSelector:
+        matchLabels:
+          provider: bitnami
+          type: mongodb
+      compositionUpdatePolicy: Manual
