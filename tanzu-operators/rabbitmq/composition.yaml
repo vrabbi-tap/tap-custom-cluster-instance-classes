@@ -1,0 +1,130 @@
+---
+apiVersion: apiextensions.crossplane.io/v1
+kind: Composition
+metadata:
+  name: xrabbitmqclusters.tap.terasky.com
+spec:
+  compositeTypeRef:
+    apiVersion: tap.terasky.com/v1alpha1
+    kind: XRabbitmqCluster
+  publishConnectionDetailsWithStoreConfigRef:
+    name: default
+  resources:
+  - base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: v1
+            kind: Namespace
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.name
+      type: FromCompositeFieldPath
+  - base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: rabbitmq.com/v1beta1
+            kind: RabbitmqCluster
+            metadata:
+              namespace: ""
+              annotations:
+                rabbitmq.com/topology-allowed-namespaces: '*'
+            spec:
+              replicas: 1
+              resources:
+                requests:
+                  cpu: 200m
+                limits:
+                  cpu: 200m
+    patches:
+      - fromFieldPath: metadata.name
+        toFieldPath: spec.forProvider.manifest.metadata.namespace
+        type: FromCompositeFieldPath       
+      - fromFieldPath: metadata.name
+        toFieldPath: spec.forProvider.manifest.metadata.name
+        type: FromCompositeFieldPath
+      - fromFieldPath: spec.replicas
+        toFieldPath: spec.forProvider.manifest.spec.replicas
+        type: FromCompositeFieldPath     
+  - base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: secretgen.carvel.dev/v1alpha1
+            kind: SecretTemplate
+            metadata:
+              namespace: ""
+            spec:
+              inputResources:
+              - name: creds
+                ref:
+                  apiVersion: v1
+                  kind: Secret
+              template:
+                type: connection.crossplane.io/v1alpha1
+                data:
+                  provider: "$(.creds.data.provider)"
+                  type: "$(.creds.data.type)"
+                  host: "$(.creds.data.host)"
+                  port: "$(.creds.data.port)"
+                  username: "$(.creds.data.username)"
+                  password: "$(.creds.data.password)"
+    patches: 
+      - fromFieldPath: metadata.name
+        toFieldPath: spec.forProvider.manifest.metadata.namespace    
+      - fromFieldPath: metadata.name
+        toFieldPath: spec.forProvider.manifest.spec.inputResources[0].ref.name
+        transforms:
+        - string:
+            fmt: '%s-default-user'
+            type: Format
+          type: string
+        type: FromCompositeFieldPath
+      - fromFieldPath: spec.writeConnectionSecretToRef.name
+        toFieldPath: spec.forProvider.manifest.metadata.name
+        type: FromCompositeFieldPath
+  - base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: secretgen.carvel.dev/v1alpha1
+            kind: SecretExport
+            metadata:
+              namespace: ""
+    patches:
+      - fromFieldPath: metadata.name
+        toFieldPath: spec.forProvider.manifest.metadata.namespace    
+      - fromFieldPath: spec.writeConnectionSecretToRef.name
+        toFieldPath: spec.forProvider.manifest.metadata.name
+        type: FromCompositeFieldPath
+      - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+        toFieldPath: spec.forProvider.manifest.spec.toNamespace
+        type: FromCompositeFieldPath
+  - base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
+            apiVersion: secretgen.carvel.dev/v1alpha1
+            kind: SecretImport
+            spec:
+              fromNamespace: ""
+    patches:
+      - fromFieldPath: metadata.name
+        toFieldPath: spec.forProvider.manifest.spec.fromNamespace    
+      - fromFieldPath: spec.writeConnectionSecretToRef.name
+        toFieldPath: spec.forProvider.manifest.metadata.name
+        type: FromCompositeFieldPath
+      - fromFieldPath: spec.writeConnectionSecretToRef.namespace
+        toFieldPath: spec.forProvider.manifest.metadata.namespace
+        type: FromCompositeFieldPath
