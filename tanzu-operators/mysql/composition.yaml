@@ -104,7 +104,7 @@ spec:
             apiVersion: secretgen.carvel.dev/v1alpha1
             kind: SecretExport
             metadata:
-              namespace: service-instances
+              namespace: ""
     patches:
       - fromFieldPath: metadata.name
         toFieldPath: spec.forProvider.manifest.metadata.namespace
@@ -124,7 +124,7 @@ spec:
             apiVersion: secretgen.carvel.dev/v1alpha1
             kind: SecretImport
             spec:
-              fromNamespace: service-instances
+              fromNamespace: ""
     patches:
       - fromFieldPath: spec.writeConnectionSecretToRef.name
         toFieldPath: spec.forProvider.manifest.metadata.name
