@@ -30,10 +30,7 @@ spec:
             properties:
               storageGB:
                 description: The desired storage capacity of a single replica, in GB.
-                type: integer
-              serviceNamespace:
-                description: The namespace that the service will be deployed to.
-                type: string                 
+                type: integer               
             type: object
         type: object
     served: true
