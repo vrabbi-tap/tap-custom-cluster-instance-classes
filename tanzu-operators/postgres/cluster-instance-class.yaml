@@ -1,0 +1,11 @@
+---
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ClusterInstanceClass
+metadata:
+  name: postgresql
+spec:
+  description:
+    short: PostgreSQL
+  provisioner:
+    crossplane:
+      compositeResourceDefinition: xpostgresqlinstances.tap.terasky.com
