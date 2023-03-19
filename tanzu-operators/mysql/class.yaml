@@ -1,0 +1,10 @@
+apiVersion: services.apps.tanzu.vmware.com/v1alpha1
+kind: ClusterInstanceClass
+metadata:
+  name: mysql
+spec:
+  description:
+    short: MySQL
+  provisioner:
+    crossplane:
+      compositeResourceDefinition: xmysqlinstances.tap.terasky.com
