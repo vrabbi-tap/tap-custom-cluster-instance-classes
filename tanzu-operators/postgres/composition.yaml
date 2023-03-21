@@ -53,6 +53,8 @@ spec:
             metadata:
               namespace: ""
             spec:
+              imagePullSecret: 
+                name: regsecret
               highAvailability:
                 enabled: false
             storageSize: 1Gi

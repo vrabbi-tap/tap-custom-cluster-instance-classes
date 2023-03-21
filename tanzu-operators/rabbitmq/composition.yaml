@@ -28,6 +28,26 @@ spec:
       spec:
         forProvider:
           manifest:
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: regsecret
+              namespace: ""
+              annotations:
+                secretgen.carvel.dev/image-pull-secret: ""
+            type: kubernetes.io/dockerconfigjson
+            data: 
+              .dockerconfigjson: "e30K"
+    patches:
+    - fromFieldPath: metadata.name
+      toFieldPath: spec.forProvider.manifest.metadata.namespace
+      type: FromCompositeFieldPath
+  - base:
+      apiVersion: kubernetes.crossplane.io/v1alpha1
+      kind: Object
+      spec:
+        forProvider:
+          manifest:
             apiVersion: rabbitmq.com/v1beta1
             kind: RabbitmqCluster
             metadata:
